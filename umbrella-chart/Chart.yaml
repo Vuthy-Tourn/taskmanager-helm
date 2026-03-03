@@ -1,0 +1,29 @@
+apiVersion: v2
+name: taskmanager
+description: |
+  Umbrella Helm chart for TaskManager fullstack application.
+  Manages: Next.js frontend, Spring Boot backend, PostgreSQL database.
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+# Sub-chart dependencies — local file references
+dependencies:
+  - name: frontend
+    version: "0.1.0"
+    repository: "file://../frontend"
+    alias: frontend
+
+  - name: backend
+    version: "0.1.0"
+    repository: "file://../backend"
+    alias: backend
+
+  - name: postgresql
+    version: "0.1.0"
+    repository: "file://../postgresql"
+    alias: postgresql
+
+maintainers:
+  - name: DevOps Team
+    email: devops@example.com

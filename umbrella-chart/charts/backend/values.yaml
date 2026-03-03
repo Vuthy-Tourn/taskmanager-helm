@@ -1,0 +1,68 @@
+replicaCount: 3
+
+image:
+  repository: vuthytourn/taskmanager-backend
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+
+service:
+  type: ClusterIP
+  port: 8080
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: 
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+    kubernetes.io/ingressClassName: "nginx"
+  host: taskmanager-backend.vuthytourn.shop
+  tls:
+    - secretName: taskmanager-tls
+      hosts:
+        - taskmanager-backend.vuthytourn.shop
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 256Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
+# Non-secret env vars
+env:
+  DB_HOST: "taskmanager-postgresql"
+  DB_PORT: "5432"
+  DB_NAME: "taskdb"
+
+# Mounted from Kubernetes Secret (created separately or via umbrella)
+secretRef:
+  name: "taskmanager-db-secret"
+
+autoscaling:
+  enabled: false
+  minReplicas: 2
+  maxReplicas: 6
+  targetCPUUtilizationPercentage: 70
+
+livenessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 45
+  periodSeconds: 20
+  failureThreshold: 3
+
+readinessProbe:
+  httpGet:
+    path: /actuator/health
+    port: 8080
+  initialDelaySeconds: 20
+  periodSeconds: 10
+  failureThreshold: 3
+
+nodeSelector: {}
+tolerations: []
+affinity: {}

@@ -1,0 +1,13 @@
+# Staging overrides — applied on top of values.yaml
+# Usage: helm upgrade -f values.yaml -f values-staging.yaml
+frontend:
+  replicaCount: 1
+  ingress:
+    host: taskmanager-frontend.vuthytourn.shop
+backend:
+  replicaCount: 1
+  ingress:
+    host: taskmanager-backend.vuthytourn.shop
+postgresql:
+  storage:
+    size: 2Gi
