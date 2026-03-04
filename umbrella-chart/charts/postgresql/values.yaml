@@ -12,8 +12,8 @@ auth:
 primary:
   persistence:
     enabled: true
-    size: 5Gi
-    storageClass: ""
+    size: 20Gi
+    storageClass: "longhorn"
     accessModes:
       - ReadWriteOnce
 
