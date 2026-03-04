@@ -28,7 +28,10 @@ frontend:
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
     ingressClassName: nginx 
-    tls: []
+    tls:
+    - hosts:
+        - taskmanager-frontend.vuthytourn.shop
+      secretName: taskmanager-frontend-tls
   env:
     NEXT_PUBLIC_API_URL: "https://taskmanager-backend.vuthytourn.shop"
   resources:
