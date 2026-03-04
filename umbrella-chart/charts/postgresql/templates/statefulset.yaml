@@ -18,8 +18,6 @@ spec:
       securityContext:
         runAsUser: 999
         fsGroup: 999
-      nodeSelector:
-        longhorn.io/engine-manager: "true"
       containers:
         - name: postgresql
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
