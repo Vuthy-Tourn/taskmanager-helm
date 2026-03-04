@@ -16,15 +16,32 @@ primary:
     storageClass: "longhorn"
     accessModes:
       - ReadWriteOnce
+    # Keep at least 2 replicas to reduce risk of fault
+    replicas: 2  
 
 resources:
   requests:
-    cpu: 100m
-    memory: 256Mi
+    cpu: 250m   # Slightly higher to reduce scheduling conflicts
+    memory: 512Mi
   limits:
     cpu: 500m
-    memory: 512Mi
+    memory: 1Gi
 
 service:
   type: ClusterIP
   port: 5432
+
+# Ensure pod is scheduled only on nodes where Longhorn is healthy
+nodeSelector:
+  longhorn.io/engine-manager: "true"
+
+affinity:
+  podAntiAffinity:
+    requiredDuringSchedulingIgnoredDuringExecution:
+      - labelSelector:
+          matchExpressions:
+            - key: app.kubernetes.io/name
+              operator: In
+              values:
+                - postgresql
+        topologyKey: "kubernetes.io/hostname"

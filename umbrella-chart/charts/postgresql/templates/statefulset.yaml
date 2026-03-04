@@ -5,8 +5,8 @@ metadata:
   labels:
     {{- include "postgresql.labels" . | nindent 4 }}
 spec:
-  replicas: 1
-  serviceName: {{ include "postgresql.fullname" . }}-headless
+  replicas: {{ .Values.primary.persistence.replicas | default 1 }}
+  serviceName: "{{ include "postgresql.fullname" . }}-headless"
   selector:
     matchLabels:
       {{- include "postgresql.selectorLabels" . | nindent 6 }}
@@ -18,6 +18,18 @@ spec:
       securityContext:
         runAsUser: 999
         fsGroup: 999
+      nodeSelector:
+        longhorn.io/engine-manager: "true"
+      affinity:
+        podAntiAffinity:
+          requiredDuringSchedulingIgnoredDuringExecution:
+            - labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - postgresql
+              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: postgresql
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -27,40 +39,48 @@ spec:
               containerPort: 5432
           env:
             - name: POSTGRES_DB
-              value: {{ .Values.auth.database | quote }}
+              value: "{{ .Values.auth.database }}"
             - name: POSTGRES_USER
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth.existingSecret }}
+                  name: "{{ .Values.auth.existingSecret }}"
                   key: DB_USER
             - name: POSTGRES_PASSWORD
               valueFrom:
                 secretKeyRef:
-                  name: {{ .Values.auth.existingSecret }}
+                  name: "{{ .Values.auth.existingSecret }}"
                   key: DB_PASSWORD
             - name: PGDATA
-              value: /var/lib/postgresql/data/pgdata
+              value: "/var/lib/postgresql/data/pgdata"
           readinessProbe:
             exec:
-              command: ["pg_isready", "-U", "postgres", "-d", {{ .Values.auth.database | quote }}]
+              command:
+                - "pg_isready"
+                - "-U"
+                - "{{ .Values.auth.user | default "postgres" }}"
+                - "-d"
+                - "{{ .Values.auth.database }}"
             initialDelaySeconds: 5
             periodSeconds: 10
             failureThreshold: 5
           livenessProbe:
             exec:
-              command: ["pg_isready", "-U", "postgres"]
+              command:
+                - "pg_isready"
+                - "-U"
+                - "{{ .Values.auth.user | default "postgres" }}"
             initialDelaySeconds: 30
             periodSeconds: 20
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: data
-              mountPath: /var/lib/postgresql/data
+              mountPath: "/var/lib/postgresql/data"
       volumes:
         - name: data
           {{- if .Values.primary.persistence.enabled }}
           persistentVolumeClaim:
-            claimName: {{ include "postgresql.fullname" . }}-data
+            claimName: "{{ include "postgresql.fullname" . }}-data"
           {{- else }}
           emptyDir: {}
           {{- end }}
