@@ -17,7 +17,7 @@ frontend:
   image:
     repository: vuthytourn/taskmanager-frontend
     pullPolicy: IfNotPresent
-    tag: "sha-9d1b2e0"
+    tag: "sha-c8ca246"
   service:
     type: ClusterIP
     port: 3000
@@ -27,11 +27,11 @@ frontend:
     host: taskmanager-frontend.vuthytourn.shop
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    ingressClassName: nginx 
+    ingressClassName: nginx
     tls:
-    - hosts:
-        - taskmanager-frontend.vuthytourn.shop
-      secretName: taskmanager-frontend-tls
+      - hosts:
+          - taskmanager-frontend.vuthytourn.shop
+        secretName: taskmanager-frontend-tls
   env:
     NEXT_PUBLIC_API_URL: "https://taskmanager-backend.vuthytourn.shop"
   resources:
@@ -55,7 +55,7 @@ backend:
   image:
     repository: vuthytourn/taskmanager-backend
     pullPolicy: IfNotPresent
-    tag: "sha-9d1b2e0"
+    tag: "sha-c8ca246"
   service:
     type: ClusterIP
     port: 8080
@@ -65,11 +65,11 @@ backend:
     host: taskmanager-backend.vuthytourn.shop
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    ingressClassName: nginx 
+    ingressClassName: nginx
     tls:
-    - hosts:
-        - taskmanager-backend.vuthytourn.shop
-      secretName: taskmanager-backend-tls
+      - hosts:
+          - taskmanager-backend.vuthytourn.shop
+        secretName: taskmanager-backend-tls
   env:
     DB_HOST: "taskmanager-postgresql-chart"
     DB_PORT: "5432"
