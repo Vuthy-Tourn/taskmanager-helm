@@ -4,8 +4,16 @@
 # Jenkins overrides image.tag per service on every deploy.
 # ============================================================
 
+# Global service account (used by serviceaccount.yaml)
+serviceAccount:
+  create: true
+  name: taskmanager
+
 # ── Frontend ────────────────────────────────────────────────
 frontend:
+  serviceAccount:
+    create: true
+    name: taskmanager-frontend
   replicaCount: 3
   image:
     repository: vuthytourn/taskmanager-frontend
@@ -40,6 +48,9 @@ frontend:
 
 # ── Backend ─────────────────────────────────────────────────
 backend:
+  serviceAccount:
+    create: true
+    name: taskmanager-backend
   replicaCount: 3
   image:
     repository: vuthytourn/taskmanager-backend

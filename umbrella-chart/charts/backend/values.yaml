@@ -1,5 +1,7 @@
 replicaCount: 3
 
+fullnameOverride: taskmanager-backend-chart
+
 image:
   repository: vuthytourn/taskmanager-backend
   pullPolicy: IfNotPresent

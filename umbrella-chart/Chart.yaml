@@ -11,17 +11,17 @@ appVersion: "1.0.0"
 dependencies:
   - name: frontend
     version: "0.1.0"
-    repository: "file://../frontend"
+    repository: "file://charts/frontend"
     alias: frontend
 
   - name: backend
     version: "0.1.0"
-    repository: "file://../backend"
+    repository: "file://charts/backend"
     alias: backend
 
   - name: postgresql
     version: "0.1.0"
-    repository: "file://../postgresql"
+    repository: "file://charts/postgresql"
     alias: postgresql
 
 maintainers:
