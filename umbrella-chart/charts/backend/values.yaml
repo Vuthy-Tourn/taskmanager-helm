@@ -18,8 +18,8 @@ ingress:
   className: "nginx"
   annotations: 
     cert-manager.io/cluster-issuer: "letsencrypt-prod"
-    kubernetes.io/ingressClassName: "nginx"
   host: taskmanager-backend.vuthytourn.shop
+  ingressClassName: nginx 
   tls:
     - secretName: taskmanager-tls
       hosts:

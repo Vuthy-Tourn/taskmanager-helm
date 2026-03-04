@@ -27,7 +27,7 @@ frontend:
     host: taskmanager-frontend.vuthytourn.shop
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
-      kubernetes.io/ingressClassName: "nginx"
+    ingressClassName: nginx 
     tls: []
   env:
     NEXT_PUBLIC_API_URL: "https://taskmanager-backend.vuthytourn.shop"
@@ -62,8 +62,11 @@ backend:
     host: taskmanager-backend.vuthytourn.shop
     annotations:
       cert-manager.io/cluster-issuer: "letsencrypt-prod"
-      kubernetes.io/ingressClassName: "nginx"
-    tls: []
+    ingressClassName: nginx 
+    tls:
+    - hosts:
+        - taskmanager-backend.vuthytourn.shop
+      secretName: taskmanager-backend-tls
   env:
     DB_HOST: "taskmanager-postgresql-chart"
     DB_PORT: "5432"
