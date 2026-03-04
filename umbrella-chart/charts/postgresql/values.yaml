@@ -32,8 +32,8 @@ service:
   port: 5432
 
 # Ensure pod is scheduled only on nodes where Longhorn is healthy
-nodeSelector:
-  longhorn.io/engine-manager: "true"
+# nodeSelector:
+#   longhorn.io/engine-manager: "true"
 
 affinity:
   podAntiAffinity:
