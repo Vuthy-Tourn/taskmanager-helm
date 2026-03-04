@@ -6,7 +6,7 @@ metadata:
     {{- include "postgresql.labels" . | nindent 4 }}
 spec:
   serviceName: "{{ include "postgresql.fullname" . }}-headless"
-  replicas: {{ .Values.primary.persistence.replicas | default 1 }}
+  replicas: {{ .Values.primary.replicaCount | default 1 }}
   selector:
     matchLabels:
       {{- include "postgresql.selectorLabels" . | nindent 6 }}
@@ -18,6 +18,10 @@ spec:
       securityContext:
         runAsUser: 999
         fsGroup: 999
+      {{- with .Values.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
       containers:
         - name: postgresql
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -48,11 +52,20 @@ spec:
               command: ["pg_isready", "-U", "{{ .Values.auth.user | default "postgres" }}", "-d", "{{ .Values.auth.database }}"]
             initialDelaySeconds: 5
             periodSeconds: 10
+            failureThreshold: 3
           livenessProbe:
             exec:
               command: ["pg_isready", "-U", "{{ .Values.auth.user | default "postgres" }}"]
             initialDelaySeconds: 30
             periodSeconds: 20
+            failureThreshold: 3
+          resources:
+            requests:
+              cpu: {{ .Values.resources.requests.cpu }}
+              memory: {{ .Values.resources.requests.memory }}
+            limits:
+              cpu: {{ .Values.resources.limits.cpu }}
+              memory: {{ .Values.resources.limits.memory }}
 
   volumeClaimTemplates:
     - metadata:
@@ -60,8 +73,11 @@ spec:
         labels:
           app.kubernetes.io/name: postgresql
           app.kubernetes.io/instance: {{ .Release.Name }}
+        annotations:
+          longhorn.io/numberOfReplicas: "{{ .Values.primary.persistence.longhornReplicas | default 1 }}"
       spec:
-        accessModes: ["ReadWriteOnce"]
+        accessModes:
+          {{- toYaml .Values.primary.persistence.accessModes | nindent 10 }}
         storageClassName: {{ .Values.primary.persistence.storageClass }}
         resources:
           requests:

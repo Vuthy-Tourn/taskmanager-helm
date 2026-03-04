@@ -10,18 +10,23 @@ auth:
   existingSecret: "db-secret"
 
 primary:
+  # Number of PostgreSQL pods (StatefulSet replicas)
+  replicaCount: 1
+
   persistence:
     enabled: true
     size: 20Gi
     storageClass: "longhorn"
     accessModes:
       - ReadWriteOnce
-    # Keep at least 2 replicas to reduce risk of fault
-    replicas: 2  
+    # Number of Longhorn volume replicas (storage-level redundancy)
+    # Keep at 1 since only node5 has sufficient disk space
+    # Increase to 2 after freeing space on node4
+    longhornReplicas: 1
 
 resources:
   requests:
-    cpu: 250m   # Slightly higher to reduce scheduling conflicts
+    cpu: 250m
     memory: 512Mi
   limits:
     cpu: 500m
@@ -31,13 +36,16 @@ service:
   type: ClusterIP
   port: 5432
 
+# Soft anti-affinity: prefer spreading pods across nodes but don't hard-block
 affinity:
   podAntiAffinity:
-    requiredDuringSchedulingIgnoredDuringExecution:
-      - labelSelector:
-          matchExpressions:
-            - key: app.kubernetes.io/name
-              operator: In
-              values:
-                - postgresql
-        topologyKey: "kubernetes.io/hostname"
+    preferredDuringSchedulingIgnoredDuringExecution:
+      - weight: 100
+        podAffinityTerm:
+          labelSelector:
+            matchExpressions:
+              - key: app.kubernetes.io/name
+                operator: In
+                values:
+                  - postgresql
+          topologyKey: "kubernetes.io/hostname"
