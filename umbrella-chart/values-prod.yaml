@@ -8,7 +8,6 @@
 serviceAccount:
   create: true
   name: taskmanager
-
 # ── Frontend ────────────────────────────────────────────────
 frontend:
   serviceAccount:
@@ -18,7 +17,7 @@ frontend:
   image:
     repository: vuthytourn/taskmanager-frontend
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "sha-712f9c5"
   service:
     type: ClusterIP
     port: 3000
@@ -44,8 +43,6 @@ frontend:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 70
-
-
 # ── Backend ─────────────────────────────────────────────────
 backend:
   serviceAccount:
@@ -55,7 +52,7 @@ backend:
   image:
     repository: vuthytourn/taskmanager-backend
     pullPolicy: IfNotPresent
-    tag: "latest"
+    tag: "sha-712f9c5"
   service:
     type: ClusterIP
     port: 8080
@@ -84,8 +81,6 @@ backend:
     minReplicas: 2
     maxReplicas: 5
     targetCPUUtilizationPercentage: 70
-
-
 # ── PostgreSQL ───────────────────────────────────────────────
 postgresql:
   image:
