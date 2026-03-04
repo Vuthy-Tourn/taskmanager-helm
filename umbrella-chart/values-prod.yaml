@@ -68,7 +68,7 @@ backend:
     DB_HOST: "taskmanager-postgresql"
     DB_PORT: "5432"
     DB_NAME: "taskdb"
-  existingSecret: "db-secret"
+  secretName: taskmanager-postgresql-chart-db-secret
   resources:
     requests:
       cpu: 200m
@@ -90,13 +90,13 @@ postgresql:
   auth:
     username: "postgres"
     database: "taskdb"
-    existingSecret: "db-secret"
+    # existingSecret: "db-secret"
     secretKeys:
       adminPasswordKey: DB_PASSWORD
       userPasswordKey: DB_PASSWORD
   storage:
-    size: 5Gi
-    storageClass: ""
+    size: 10Gi
+    storageClass: "longhorn"
   resources:
     requests:
       cpu: 100m

@@ -41,7 +41,7 @@ env:
 
 # Mounted from Kubernetes Secret (created separately or via umbrella)
 secretRef:
-  name: "taskmanager-db-secret"
+  name: "db-secret"
 
 autoscaling:
   enabled: false
