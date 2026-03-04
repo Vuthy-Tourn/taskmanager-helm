@@ -96,7 +96,7 @@ postgresql:
       userPasswordKey: DB_PASSWORD
   storage:
     size: 10Gi
-    storageClass: "longhorn"
+    storageClass: "longhorn-single"
   resources:
     requests:
       cpu: 100m

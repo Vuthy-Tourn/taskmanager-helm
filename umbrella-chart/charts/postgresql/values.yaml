@@ -16,7 +16,7 @@ primary:
   persistence:
     enabled: true
     size: 20Gi
-    storageClass: "longhorn"
+    storageClass: "longhorn-single"
     accessModes:
       - ReadWriteOnce
     # Number of Longhorn volume replicas (storage-level redundancy)
