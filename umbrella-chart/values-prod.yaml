@@ -65,7 +65,7 @@ backend:
       kubernetes.io/ingressClassName: "nginx"
     tls: []
   env:
-    DB_HOST: "taskmanager-postgresql"
+    DB_HOST: "taskmanager-postgresql-chart"
     DB_PORT: "5432"
     DB_NAME: "taskdb"
   secretName: taskmanager-postgresql-chart-db-secret
