@@ -2,11 +2,9 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: {{ include "postgresql.fullname" . }}
-  labels:
-    {{- include "postgresql.labels" . | nindent 4 }}
 spec:
-  replicas: {{ .Values.primary.persistence.replicas | default 1 }}
   serviceName: "{{ include "postgresql.fullname" . }}-headless"
+  replicas: {{ .Values.primary.persistence.replicas | default 1 }}
   selector:
     matchLabels:
       {{- include "postgresql.selectorLabels" . | nindent 6 }}
@@ -20,16 +18,6 @@ spec:
         fsGroup: 999
       nodeSelector:
         longhorn.io/engine-manager: "true"
-      affinity:
-        podAntiAffinity:
-          requiredDuringSchedulingIgnoredDuringExecution:
-            - labelSelector:
-                matchExpressions:
-                  - key: app.kubernetes.io/name
-                    operator: In
-                    values:
-                      - postgresql
-              topologyKey: "kubernetes.io/hostname"
       containers:
         - name: postgresql
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
@@ -52,35 +40,28 @@ spec:
                   key: DB_PASSWORD
             - name: PGDATA
               value: "/var/lib/postgresql/data/pgdata"
-          readinessProbe:
-            exec:
-              command:
-                - "pg_isready"
-                - "-U"
-                - "{{ .Values.auth.user | default "postgres" }}"
-                - "-d"
-                - "{{ .Values.auth.database }}"
-            initialDelaySeconds: 5
-            periodSeconds: 10
-            failureThreshold: 5
-          livenessProbe:
-            exec:
-              command:
-                - "pg_isready"
-                - "-U"
-                - "{{ .Values.auth.user | default "postgres" }}"
-            initialDelaySeconds: 30
-            periodSeconds: 20
-          resources:
-            {{- toYaml .Values.resources | nindent 12 }}
           volumeMounts:
             - name: data
               mountPath: "/var/lib/postgresql/data"
-      volumes:
-        - name: data
-          {{- if .Values.primary.persistence.enabled }}
-          persistentVolumeClaim:
-            claimName: "{{ include "postgresql.fullname" . }}-data"
-          {{- else }}
-          emptyDir: {}
-          {{- end }}
+          readinessProbe:
+            exec:
+              command: ["pg_isready", "-U", "{{ .Values.auth.user | default "postgres" }}", "-d", "{{ .Values.auth.database }}"]
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          livenessProbe:
+            exec:
+              command: ["pg_isready", "-U", "{{ .Values.auth.user | default "postgres" }}"]
+            initialDelaySeconds: 30
+            periodSeconds: 20
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+        labels:
+          app.kubernetes.io/name: postgresql
+          app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      accessModes: ["ReadWriteOnce"]
+      storageClassName: longhorn
+      resources:
+        requests:
+          storage: {{ .Values.primary.persistence.size }}
