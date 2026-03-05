@@ -17,7 +17,7 @@ frontend:
   image:
     repository: vuthytourn/taskmanager-frontend
     pullPolicy: IfNotPresent
-    tag: "sha-c8ca246"
+    tag: "sha-cbe6d3d"
   service:
     type: ClusterIP
     port: 3000
@@ -55,7 +55,7 @@ backend:
   image:
     repository: vuthytourn/taskmanager-backend
     pullPolicy: IfNotPresent
-    tag: "sha-c8ca246"
+    tag: "sha-cbe6d3d"
   service:
     type: ClusterIP
     port: 8080
